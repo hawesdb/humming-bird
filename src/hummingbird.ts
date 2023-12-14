@@ -15,7 +15,7 @@ export default class Hummingbird {
     this.width = width
     this.height = height
 
-    this.x = window.innerWidth / 5
+    this.x = this.canvas.width / 5
     this.y = (this.canvas.height / 2) - (this.height / 2)
     this.upImage = new Image()
     this.upImage.src = './src/images/hummingbird.png'

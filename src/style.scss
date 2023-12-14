@@ -1,0 +1,28 @@
+body {
+  margin: 0;
+}
+
+#app {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+}
+
+#game-messages {
+  position: absolute;
+  top: 65%;
+  width: 100%;
+  text-align: center;
+  #game-lose-message {
+    &:not(.lost-game-show) {
+      display: none;
+    }
+    .lost-game-show {
+      display: block;
+    }
+  }
+}
+
+.active-game-hide {
+  display: none;
+}
