@@ -1,128 +1,163 @@
-import Hummingbird from './hummingbird'
-import Pipe from './pipe'
 import './style.scss'
 
-let startTime: number | null = null
-let activeGame: boolean = false
-let lostGame: boolean = false
+import Hummingbird from './hummingbird'
+import PipeController from './pipe-controller'
+
+const GAME_WIDTH = 1200
+const GAME_HEIGHT = 800
+
+let scaleRatio: number = 1
+let previousTime: number | null = null
+let gameStarted: boolean = false
+let gameOver: boolean = false
+let shouldShowInstructions: boolean = false
+let shouldShowInstructionsTimeout: number | null = null
+let hasAddedEventListenersForRestart: boolean = false
 
 // screen
 const canvas: HTMLCanvasElement = document.getElementById('game') as HTMLCanvasElement
 const ctx: CanvasRenderingContext2D = canvas.getContext('2d')!
 
-const startMessage: HTMLElement = document.getElementById('game-start-message')!
-const lostMessage: HTMLElement = document.getElementById('game-lose-message')!
+// game objects
+const HUMMINGBIRD_WIDTH = 64
+const HUMMINGBIRD_HEIGHT = 64
+let hummingbird: Hummingbird | null = null
+let pipeController: PipeController | null = null
 
 // physics
-const GRAVITY = .1
-const JUMP_HEIGHT = 10
-const PIPE_MAX_RATIO = 3 / 4
-const PIPE_MIN_RATIO = 1 / 4
-let pipeGap = 100
-let pipeMax = canvas.height * PIPE_MAX_RATIO
-let pipeMin = canvas.height * PIPE_MIN_RATIO
-let velocity = 0
-let gameSpeed = 3
-let pipeInterval = 1500
+const GAME_SPEED_START = .6
+// TODO: Implement game speed increases
+const GAME_SPEED_INCREMENT = 0.0000001
+let gameSpeed = GAME_SPEED_START
 
-// game objects
-let hummingbird: Hummingbird | null = null
-let pipes: Pipe[] = []
-let pipesToDelete: number[] = []
+const getScaleRatio = () => {
+  const screenWidth = Math.min(window.innerWidth, document.documentElement.clientWidth)
+  const screenHeight = Math.min(window.innerHeight, document.documentElement.clientHeight)
 
-
-const setScreen = () => {
-  canvas.width = Math.min(window.innerWidth, canvas.parentElement?.clientWidth ?? 0)
-  canvas.height = Math.min(window.innerHeight, canvas.parentElement?.clientHeight ?? 0)
-  pipeMax = canvas.height * PIPE_MAX_RATIO
-  pipeMin = canvas.height * PIPE_MIN_RATIO
-  createInitialSprites()
+  // window is wider
+  if (screenWidth / screenHeight < GAME_WIDTH / GAME_HEIGHT) {
+    return screenWidth / GAME_WIDTH
+  } else {
+    return screenHeight / GAME_HEIGHT
+  }
 }
 
-const createInitialSprites = () => {
-  startTime = null
-  velocity = 0
-  hummingbird = new Hummingbird(ctx, 60, 60)
-  pipes = []
-  pipeGap = hummingbird.height * 4
+const setScreen = () => {
+  scaleRatio = getScaleRatio()
+  canvas.width = GAME_WIDTH * scaleRatio
+  canvas.height = GAME_HEIGHT * scaleRatio
+
+  createSprites()
 }
 
 const clearScreen = () => {
   ctx.fillStyle = 'white'
-  ctx.fillRect(0, 0, canvas?.clientWidth, canvas?.clientHeight)
+  ctx.fillRect(0, 0, canvas.width, canvas.height)
 }
 
-// LISTENERS
-window.addEventListener('resize', setScreen)
-window.addEventListener('keydown', (event) => {
-  if (event.key == ' ') {
-    if (activeGame) {
-      velocity -= JUMP_HEIGHT
-      if (velocity < -7) {
-        velocity = -7
-      }
-    } else {
-      createInitialSprites()
-      activeGame = true
-      lostGame = false
-      startMessage.classList.add('active-game-hide')
-      lostMessage.classList.add('active-game-hide')
-      requestAnimationFrame(gameLoop)
+const createSprites = () => {
+  const hummingbirdScaledWidth = HUMMINGBIRD_WIDTH * scaleRatio
+  const hummingbirdScaledHeight = HUMMINGBIRD_HEIGHT * scaleRatio
+
+  hummingbird = new Hummingbird(ctx, hummingbirdScaledWidth, hummingbirdScaledHeight, scaleRatio)
+
+  pipeController = new PipeController(ctx, 64, scaleRatio, gameSpeed)
+}
+
+const showInstructions = () => {
+  const fontSize = 25 * scaleRatio
+  ctx.textAlign = 'center'
+  ctx.font = `${fontSize}px Verdana`
+  ctx.fillStyle = 'grey'
+  const x = canvas.width / 2
+  const y = canvas.height / 2
+  ctx.fillText('Press space to jump', x, y)
+}
+
+const showGameOver = () => {
+  const fontSize = 70 * scaleRatio
+  ctx.textAlign = 'center'
+  ctx.font = `${fontSize}px Verdana`
+  ctx.fillStyle = 'grey'
+  const x = canvas.width / 2
+  const y = canvas.height / 2.25
+  ctx.fillText('GAME OVER', x, y)
+}
+
+const startGame = (event: KeyboardEvent) => {
+  if (event.code === 'Space') {
+    if (!gameStarted) {
+      gameStarted = true
     }
   }
-})
+}
 
-// GAME LOOP
-// This is what repeats every frame and controls frame to frame interactions
+const setupGameReset = () => {
+  if (!hasAddedEventListenersForRestart) {
+    hasAddedEventListenersForRestart = true
+
+    setTimeout(() => {
+      window.addEventListener('keydown', reset, { once: true })
+    }, 250)
+  }
+}
+
+// listeners
+window.addEventListener('resize', setScreen)
+window.addEventListener('keydown', startGame)
+
+const reset = () => {
+  hasAddedEventListenersForRestart = false
+  gameOver = false
+  shouldShowInstructions = false
+  shouldShowInstructionsTimeout && clearTimeout(shouldShowInstructionsTimeout)
+  hummingbird && hummingbird.reset()
+  pipeController && pipeController.reset()
+  gameSpeed = GAME_SPEED_START
+}
+
 const gameLoop = (currentTime: number) => {
   clearScreen()
 
-  if (startTime === null) {
-    startTime = currentTime
-  }
-
-  if (hummingbird) {
-    // if there is not an active game, then make the velocity 0
-    velocity = activeGame ? velocity + GRAVITY : 0
-    hummingbird.draw(velocity)
-
-    // hit the top or bottom of the screen
-    if (hummingbird.y < 0 || hummingbird.y + hummingbird.height > canvas.height) {
-      activeGame = false
-      lostGame = true
-    }
-
-    // hit pipes
-  }
-
-  // GENERATE THE PIPES
-  if ((Math.floor(currentTime) - Math.floor(startTime)) % pipeInterval === 0) {
-    const pipeCenter = Math.floor(Math.random() * (pipeMax - pipeMin + 1) + pipeMin)
-    pipes.push(new Pipe(ctx, 64, pipeCenter - (pipeGap / 2), 0))
-    pipes.push(new Pipe(ctx, 64, canvas.height - pipeCenter + (pipeGap / 2), pipeCenter + (pipeGap / 2)))
-  }
-
-  pipes.forEach((pipe) => {
-    pipe.draw(gameSpeed)
-  })
-
-  // pipe cleanup
-  pipes = pipes.filter(pipe => pipe.x > -pipe.width + 20)
-
-  // LOST THE GAME
-  // if the player has lost the game, then stop the animation cycles
-  // to prevent resource waste. Also then display the relevant messages
-  if (!lostGame) {
+  if (previousTime === null) {
+    previousTime = currentTime
     requestAnimationFrame(gameLoop)
-  } else {
-    if (!lostMessage.classList.contains('lost-game-show')) {
-      lostMessage.classList.add('lost-game-show')
-    }
-
-    Array.from(document.querySelectorAll('.active-game-hide')).forEach(elem => {
-      elem.classList.remove('active-game-hide')
-    })
+    return
   }
+
+  // for tracking varying monitor speeds
+  const frameDelta = currentTime - previousTime
+  previousTime = currentTime
+
+
+  if (!gameOver && gameStarted) {
+    // update game objects
+    hummingbird && hummingbird.update(frameDelta)
+    pipeController && pipeController.update(frameDelta)
+  }
+
+  if (!gameOver && hummingbird && pipeController && (hummingbird.collide() || pipeController.collideWith(hummingbird))) {
+    gameOver = true
+    shouldShowInstructionsTimeout = setTimeout(() => {
+      shouldShowInstructions = true
+    }, 500)
+    setupGameReset()
+  }
+
+  // draw game objects
+  hummingbird && hummingbird.draw()
+  pipeController && pipeController.draw()
+
+  if (gameOver) {
+    showGameOver()
+  }
+
+  if (!gameStarted || shouldShowInstructions) {
+    showInstructions()
+  }
+
+  requestAnimationFrame(gameLoop)
 }
 
 setScreen()
+requestAnimationFrame(gameLoop)
