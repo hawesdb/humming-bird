@@ -11,8 +11,8 @@ export default class Hummingbird {
   downImage: HTMLImageElement
 
   GRAVITY = .02
-  JUMP_SPEED = 1.8
-  MAX_JUMP_HEIGHT = .9
+  JUMP_SPEED = 1.6
+  MAX_JUMP_HEIGHT = .8
   jumped = false
   velocity = 0
 

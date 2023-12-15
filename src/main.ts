@@ -3,8 +3,8 @@ import './style.scss'
 import Hummingbird from './hummingbird'
 import PipeController from './pipe-controller'
 
-const GAME_WIDTH = 1200
-const GAME_HEIGHT = 800
+const GAME_WIDTH = 1000
+const GAME_HEIGHT = 600
 
 let scaleRatio: number = 1
 let previousTime: number | null = null
@@ -19,13 +19,13 @@ const canvas: HTMLCanvasElement = document.getElementById('game') as HTMLCanvasE
 const ctx: CanvasRenderingContext2D = canvas.getContext('2d')!
 
 // game objects
-const HUMMINGBIRD_WIDTH = 64
-const HUMMINGBIRD_HEIGHT = 64
+const HUMMINGBIRD_WIDTH = 32
+const HUMMINGBIRD_HEIGHT = 32
 let hummingbird: Hummingbird | null = null
 let pipeController: PipeController | null = null
 
 // physics
-const GAME_SPEED_START = .6
+const GAME_SPEED_START = .3
 // TODO: Implement game speed increases
 const GAME_SPEED_INCREMENT = 0.0000001
 let gameSpeed = GAME_SPEED_START
