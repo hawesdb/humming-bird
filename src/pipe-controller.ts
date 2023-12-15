@@ -10,8 +10,8 @@ export default class PipeController {
   pipeMax: number
   pipeMin: number
 
-  PIPE_INTERVAL = 1100
-  PIPE_GAP = 64 * 5
+  PIPE_INTERVAL = 1150
+  PIPE_GAP = 64 * 4
   PIPE_MAX_RATIO = 3 / 4
   PIPE_MIN_RATIO = 1 / 4
   nextPipeInterval = this.PIPE_INTERVAL
