@@ -16,6 +16,7 @@ export default class PipeController {
   PIPE_MIN_RATIO = 1 / 4
   nextPipeInterval = this.PIPE_INTERVAL
   pipes: Pipe[] = []
+  trackPassedPipes: Pipe[] = []
 
   constructor(ctx: CanvasRenderingContext2D, width: number, scaleRatio: number, speed: number) {
     this.ctx = ctx
@@ -40,14 +41,24 @@ export default class PipeController {
     const bottomPipe = new Pipe(this.ctx, this.width, this.canvas.height - bottomHeight, x, bottomHeight)
 
     this.pipes.push(...[topPipe, bottomPipe])
+    this.trackPassedPipes.push(topPipe)
   }
 
   collideWith = (sprite: Collideable) => {
     return this.pipes.some(pipe => pipe.collideWith(sprite))
   }
 
+  hasPassed = (sprite: Collideable) => {
+    // trackPassedPipes array is in order, check if first set of pipes are passed and remove
+    // from array if they are
+    const spritePassedPipe = this.trackPassedPipes.length > 0 && this.trackPassedPipes[0].hasPassed(sprite)
+    if (spritePassedPipe) this.trackPassedPipes.shift()
+    return spritePassedPipe
+  }
+
   reset = () => {
     this.pipes = []
+    this.trackPassedPipes = []
   }
 
   update = (frameDelta: number) => {

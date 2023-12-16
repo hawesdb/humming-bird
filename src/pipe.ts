@@ -21,6 +21,13 @@ export default class Pipe {
     this.image.src = './src/images/pipe.png'
   }
 
+  hasPassed = (sprite: Collideable) => {
+    // check if sprite has passed pipe
+    const endOfSprite = sprite.x - (sprite.width / 2)
+    const endOfPipe = this.x + (this.width / 2)
+    return endOfSprite > endOfPipe
+  }
+
   collideWith = (sprite: Collideable) => {
     const adjustBy = 1.05
     return (
