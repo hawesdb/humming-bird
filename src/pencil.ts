@@ -1,13 +1,14 @@
 import { Collideable } from './types'
 
-export default class Pipe {
+export default class Pencil {
   ctx: CanvasRenderingContext2D
   canvas: HTMLCanvasElement
   width: number
   height: number
   x: number
   y: number
-  image: HTMLImageElement
+  topImage: HTMLImageElement
+  bodyImage: HTMLImageElement
 
   constructor(ctx: CanvasRenderingContext2D, width: number, height: number, x: number, y: number) {
     this.ctx = ctx
@@ -17,28 +18,29 @@ export default class Pipe {
     this.x = x
     this.y = y
 
-    this.image = new Image()
-    this.image.src = './src/images/pipe.png'
+    this.topImage = new Image()
+    this.topImage.src = this.y == 0 ? './src/images/pencil-top-reverse.png' : './src/images/pencil-top.png'
+    this.bodyImage = new Image()
+    this.bodyImage.src = './src/images/pencil-body.png'
   }
 
   hasPassed = (sprite: Collideable) => {
-    // check if sprite has passed pipe
+    // check if sprite has passed pencil
     const endOfSprite = sprite.x - (sprite.width / 2)
-    const endOfPipe = this.x + (this.width / 2)
-    return endOfSprite > endOfPipe
+    const endOfPencil = this.x + (this.width / 2)
+    return endOfSprite > endOfPencil
   }
 
   collideWith = (sprite: Collideable) => {
-    const adjustBy = 1.05
     return (
       // right collision
-      sprite.x < this.x + this.width / adjustBy &&
+      sprite.x < this.x + this.width - 4 &&
       // left collision
-      sprite.x + sprite.width / adjustBy > this.x &&
+      sprite.x + sprite.width - 4 > this.x &&
       // bottom collision
-      sprite.y < this.y + this.height / adjustBy &&
+      sprite.y < this.y + this.height - 4 &&
       // top collision
-      sprite.y + sprite.height / adjustBy > this.y
+      sprite.y + sprite.height - 4 > this.y
     )
   }
 
@@ -47,11 +49,12 @@ export default class Pipe {
   }
 
   draw = () => {
-    this.ctx.drawImage(this.image, this.x, this.y, this.width, this.height)
+    this.ctx.drawImage(this.topImage, this.x, this.y == 0 ? this.height - 64 : this.y, this.width, 64)
+    this.ctx.drawImage(this.bodyImage, this.x, this.y == 0 ? this.y : this.y + 64, this.width, this.height - 64)
   }
 }
 
-// export default class Pipe {
+// export default class Pencil {
 //   ctx: CanvasRenderingContext2D
 //   canvas: HTMLCanvasElement
 //   width: number
@@ -77,7 +80,7 @@ export default class Pipe {
 //     this.y = y
 //     this.speed = speed
 //     this.image = new Image()
-//     this.image.src = './src/images/pipe.png'
+//     this.image.src = './src/images/pencil.png'
 //     this.image.onload = () => {
 //       this.ctx.drawImage(this.image, this.x, this.y, this.width, this.height)
 //     }
