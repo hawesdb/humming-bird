@@ -1,7 +1,7 @@
 import './style.scss'
 
 import Hummingbird from './hummingbird'
-import PipeController from './pipe-controller'
+import PencilController from './pencil-controller'
 
 const GAME_WIDTH = 1000
 const GAME_HEIGHT = 600
@@ -24,7 +24,7 @@ const ctx: CanvasRenderingContext2D = canvas.getContext('2d')!
 const HUMMINGBIRD_WIDTH = 32
 const HUMMINGBIRD_HEIGHT = 32
 let hummingbird: Hummingbird | null = null
-let pipeController: PipeController | null = null
+let pencilController: PencilController | null = null
 
 // physics
 const GAME_SPEED_START = .3
@@ -63,7 +63,7 @@ const createSprites = () => {
 
   hummingbird = new Hummingbird(ctx, hummingbirdScaledWidth, hummingbirdScaledHeight, scaleRatio)
 
-  pipeController = new PipeController(ctx, 64, scaleRatio, gameSpeed)
+  pencilController = new PencilController(ctx, 64, scaleRatio, gameSpeed)
 }
 
 const showInstructions = () => {
@@ -140,7 +140,7 @@ const reset = () => {
   shouldShowInstructions = false
   shouldShowInstructionsTimeout && clearTimeout(shouldShowInstructionsTimeout)
   hummingbird && hummingbird.reset()
-  pipeController && pipeController.reset()
+  pencilController && pencilController.reset()
   gameSpeed = GAME_SPEED_START
   gamePoints = 0
 }
@@ -162,13 +162,10 @@ const gameLoop = (currentTime: number) => {
   if (!gameOver && gameStarted) {
     // update game objects
     hummingbird && hummingbird.update(frameDelta)
-    pipeController && pipeController.update(frameDelta)
-    incrementPoints()
-    showPointCounter()
+    pencilController && pencilController.update(frameDelta)
   }
 
-  if (!gameOver && hummingbird && pipeController && (hummingbird.collide() || pipeController.collideWith(hummingbird))) {
-    if (gamePoints > highScore) highScore = gamePoints
+  if (!gameOver && hummingbird && pencilController && (hummingbird.collide() || pencilController.collideWith(hummingbird))) {
     gameOver = true
     shouldShowInstructionsTimeout = setTimeout(() => {
       shouldShowInstructions = true
@@ -178,7 +175,7 @@ const gameLoop = (currentTime: number) => {
 
   // draw game objects
   hummingbird && hummingbird.draw()
-  pipeController && pipeController.draw()
+  pencilController && pencilController.draw()
 
   if (gameOver) {
     showGameOver()

@@ -1,4 +1,4 @@
 import Hummingbird from './hummingbird'
-import Pipe from './pipe'
+import Pipe from './pencil'
 
 export type Collideable = Hummingbird | Pipe
