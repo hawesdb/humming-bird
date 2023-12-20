@@ -16,7 +16,6 @@ export default class PencilController {
   PIPE_MIN_RATIO = 1 / 4
   nextPencilInterval = this.PIPE_INTERVAL
   pencils: Pencil[] = []
-  trackPassedPencils: Pencil[] = []
 
   constructor(ctx: CanvasRenderingContext2D, width: number, scaleRatio: number, speed: number) {
     this.ctx = ctx
@@ -41,24 +40,14 @@ export default class PencilController {
     const bottomPencil = new Pencil(this.ctx, this.width, this.canvas.height - bottomHeight, x, bottomHeight)
 
     this.pencils.push(...[topPencil, bottomPencil])
-    this.trackPassedPencils.push(topPencil)
   }
 
   collideWith = (sprite: Collideable) => {
     return this.pencils.some(pencil => pencil.collideWith(sprite))
   }
 
-  hasPassed = (sprite: Collideable) => {
-    // trackPassedPencils array is in order, check if first set of pencils are passed and remove
-    // from array if they are
-    const spritePassedPencil = this.trackPassedPencils.length > 0 && this.trackPassedPencils[0].hasPassed(sprite)
-    if (spritePassedPencil) this.trackPassedPencils.shift()
-    return spritePassedPencil
-  }
-
   reset = () => {
     this.pencils = []
-    this.trackPassedPencils = []
   }
 
   update = (frameDelta: number) => {
