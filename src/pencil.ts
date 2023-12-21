@@ -41,8 +41,8 @@ export default class Pencil {
   hasPassed = (sprite: Hummingbird) => {
     // check if the hummingbird sprite has passed the pencils
     const endOfSprite = sprite.x - (sprite.width / 2)
-    const endOfPipe = this.x + (this.width / 2)
-    return endOfSprite > endOfPipe
+    const endOfPencil = this.x + (this.width / 2)
+    return endOfSprite > endOfPencil
   }
 
   update = (speed: number, frameDelta: number, scaleRatio: number) => {
