@@ -50,7 +50,7 @@ export default class PencilController {
   }
 
   hasPassed = (sprite: Hummingbird) => {
-    // trackPassedPipes array is in order, check if first set of pipes are passed and remove
+    // trackPassedPencils array is in order, check if first set of pipes are passed and remove
     // from array if they are
     if (!(sprite instanceof Hummingbird)) return false
     const spritePassedPencil = this.trackPassedPencils.length > 0 && this.trackPassedPencils[0].hasPassed(sprite)
