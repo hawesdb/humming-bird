@@ -21,8 +21,9 @@ const canvas: HTMLCanvasElement = document.getElementById('game') as HTMLCanvasE
 const ctx: CanvasRenderingContext2D = canvas.getContext('2d')!
 
 // game objects
-const HUMMINGBIRD_WIDTH = 32
-const HUMMINGBIRD_HEIGHT = 32
+// hummingbird icon is 24/30
+const HUMMINGBIRD_WIDTH = 48
+const HUMMINGBIRD_HEIGHT = 60
 let hummingbird: Hummingbird | null = null
 let pencilController: PencilController | null = null
 
