@@ -13,6 +13,8 @@ let gameOver: boolean = false
 let shouldShowInstructions: boolean = false
 let shouldShowInstructionsTimeout: number | null = null
 let hasAddedEventListenersForRestart: boolean = false
+let gamePoints: number = 0
+let highScore: number = 0
 
 // screen
 const canvas: HTMLCanvasElement = document.getElementById('game') as HTMLCanvasElement
@@ -75,6 +77,8 @@ const showInstructions = () => {
 }
 
 const showGameOver = () => {
+  showPointCounter()
+  showHighScore()
   const fontSize = 70 * scaleRatio
   ctx.textAlign = 'center'
   ctx.font = `${fontSize}px Verdana`
@@ -82,6 +86,30 @@ const showGameOver = () => {
   const x = canvas.width / 2
   const y = canvas.height / 2.25
   ctx.fillText('GAME OVER', x, y)
+}
+
+const showPointCounter = () => {
+  const fontSize = 50 * scaleRatio
+  ctx.textAlign = 'center'
+  ctx.font = `${fontSize}px Verdana`
+  ctx.fillStyle = 'grey'
+  const x = canvas.width / 2
+  const y = canvas.height / 4
+  ctx.fillText(String(gamePoints), x, y)
+}
+
+const showHighScore = () => {
+  const fontSize = 50 * scaleRatio
+  ctx.textAlign = 'center'
+  ctx.font = `${fontSize}px Verdana`
+  ctx.fillStyle = 'grey'
+  const x = canvas.width / 2
+  const y = canvas.height / 8
+  ctx.fillText(`High Score: ${highScore}`, x, y)
+}
+
+const incrementPoints = () => {
+  pencilController && hummingbird && pencilController.hasPassed(hummingbird) && (gamePoints += 1)
 }
 
 const startGame = (event: KeyboardEvent) => {
@@ -114,6 +142,7 @@ const reset = () => {
   hummingbird && hummingbird.reset()
   pencilController && pencilController.reset()
   gameSpeed = GAME_SPEED_START
+  gamePoints = 0
 }
 
 const gameLoop = (currentTime: number) => {
@@ -137,6 +166,7 @@ const gameLoop = (currentTime: number) => {
   }
 
   if (!gameOver && hummingbird && pencilController && (hummingbird.collide() || pencilController.collideWith(hummingbird))) {
+    highScore = Math.max(gamePoints, highScore)
     gameOver = true
     shouldShowInstructionsTimeout = setTimeout(() => {
       shouldShowInstructions = true
@@ -147,6 +177,10 @@ const gameLoop = (currentTime: number) => {
   // draw game objects
   hummingbird && hummingbird.draw()
   pencilController && pencilController.draw()
+
+  // draw point counter
+  incrementPoints()
+  !gameOver && gameStarted && showPointCounter()
 
   if (gameOver) {
     showGameOver()

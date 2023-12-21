@@ -1,3 +1,4 @@
+import Hummingbird from './hummingbird'
 import { Collideable } from './types'
 
 export default class Pencil {
@@ -35,6 +36,13 @@ export default class Pencil {
       // top collision
       sprite.y + sprite.height - 4 > this.y
     )
+  }
+
+  hasPassed = (sprite: Hummingbird) => {
+    // check if the hummingbird sprite has passed the pencils
+    const endOfSprite = sprite.x - (sprite.width / 2)
+    const endOfPencil = this.x + (this.width / 2)
+    return endOfSprite > endOfPencil
   }
 
   update = (speed: number, frameDelta: number, scaleRatio: number) => {
