@@ -7,7 +7,9 @@ export default class Hummingbird {
   x: number
   y: number
   image: HTMLImageElement
+  images: HTMLImageElement[]
   upImage: HTMLImageElement
+  neutralImage: HTMLImageElement
   downImage: HTMLImageElement
 
   GRAVITY = .02
@@ -15,6 +17,11 @@ export default class Hummingbird {
   MAX_JUMP_HEIGHT = .8
   jumped = false
   velocity = 0
+
+  // image control
+  IMAGE_SWITCH_DELAY = 6
+  currentImage = 0
+  imageDelay = this.IMAGE_SWITCH_DELAY
 
   constructor(ctx: CanvasRenderingContext2D, width: number, height: number, scaleRatio: number) {
     this.ctx = ctx
@@ -26,10 +33,13 @@ export default class Hummingbird {
     this.x = this.canvas.width / 5
     this.y = (this.canvas.height / 2) - (this.height / 2)
     this.upImage = new Image()
-    this.upImage.src = './src/images/hummingbird.png'
+    this.upImage.src = './src/images/hummingbird-wings-up.png'
+    this.neutralImage = new Image()
+    this.neutralImage.src = './src/images/hummingbird-wings-neutral.png'
     this.downImage = new Image()
-    // this.downImage.src
-    this.image = this.upImage
+    this.downImage.src = './src/images/hummingbird-wings-down.png'
+    this.images = [this.upImage, this.neutralImage, this.downImage]
+    this.image = this.images[this.currentImage]
 
     // keybinds
     window.removeEventListener('keydown', this.keydown)
@@ -71,14 +81,24 @@ export default class Hummingbird {
     this.jumped = false
   }
 
+  updateImage = () => {
+    this.imageDelay -= 1
+    if (this.imageDelay === 0) {
+      this.currentImage = this.currentImage === this.images.length - 1 ? 0 : this.currentImage + 1
+      this.imageDelay = this.IMAGE_SWITCH_DELAY
+    }
+  }
+
   update = (frameDelta: number) => {
+    this.updateImage()
     this.jump()
     this.fall(frameDelta)
   }
 
   draw = () => {
-    this.ctx.drawImage(this.image, this.x, this.y, this.width, this.height)
+    this.ctx.drawImage(this.images[this.currentImage], this.x, this.y, this.width, this.height)
   }
+
 
 
 }

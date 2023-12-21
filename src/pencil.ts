@@ -28,13 +28,13 @@ export default class Pencil {
   collideWith = (sprite: Collideable) => {
     return (
       // right collision
-      sprite.x < this.x + this.width - 4 &&
+      sprite.x < this.x + this.width - 10 &&
       // left collision
-      sprite.x + sprite.width - 4 > this.x &&
+      sprite.x + sprite.width - 10 > this.x &&
       // bottom collision
-      sprite.y < this.y + this.height - 4 &&
+      sprite.y < this.y + this.height - 18 &&
       // top collision
-      sprite.y + sprite.height - 4 > this.y
+      sprite.y + sprite.height - 10 > this.y
     )
   }
 
