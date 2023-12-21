@@ -109,7 +109,7 @@ const showHighScore = () => {
 }
 
 const incrementPoints = () => {
-  pipeController && hummingbird && pipeController.hasPassed(hummingbird) && (gamePoints += 1)
+  pencilController && hummingbird && pencilController.hasPassed(hummingbird) && (gamePoints += 1)
 }
 
 const startGame = (event: KeyboardEvent) => {
@@ -166,6 +166,7 @@ const gameLoop = (currentTime: number) => {
   }
 
   if (!gameOver && hummingbird && pencilController && (hummingbird.collide() || pencilController.collideWith(hummingbird))) {
+    highScore = Math.max(gamePoints, highScore)
     gameOver = true
     shouldShowInstructionsTimeout = setTimeout(() => {
       shouldShowInstructions = true
@@ -176,6 +177,10 @@ const gameLoop = (currentTime: number) => {
   // draw game objects
   hummingbird && hummingbird.draw()
   pencilController && pencilController.draw()
+
+  // draw point counter
+  incrementPoints()
+  !gameOver && gameStarted && showPointCounter()
 
   if (gameOver) {
     showGameOver()
