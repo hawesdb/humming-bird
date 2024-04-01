@@ -19,23 +19,23 @@ export const HummingbirdGame = () => {
   // screen
   let canvas = useRef<HTMLCanvasElement>(null)
   let ctx = useRef<CanvasRenderingContext2D | null>(null)
-  let scaleRatio = useRef<number>(1)
+  let scaleRatio: number = 1
 
-  let gameSpeed = useRef<number>(GAME_SPEED_START)
-  let previousTime = useRef<number | null>(null)
-  let gameStarted = useRef<boolean>(false)
-  let gameOver = useRef<boolean>(false)
-  let gamePoints = useRef<number>(0)
-  let highScore = useRef<number>(0)
+  let gameSpeed: number = GAME_SPEED_START
+  let previousTime: number | null = null
+  let gameStarted: boolean = false
+  let gameOver: boolean = false
+  let gamePoints: number = 0
+  let highScore: number = 0
 
   // game objects
-  let hummingbird = useRef<Hummingbird | null>(null)
-  let pencilController = useRef<PencilController | null>(null)
-  let ground = useRef<Ground | null>(null)
+  let hummingbird: Hummingbird | null = null
+  let pencilController: PencilController | null = null
+  let ground: Ground | null = null
 
-  let shouldShowInstructions = useRef<boolean>(false)
-  let shouldShowInstructionsTimeout = useRef<NodeJS.Timeout | null>(null)
-  let hasAddedEventListenersForRestart = useRef<boolean>(false)
+  let shouldShowInstructions: boolean = false
+  let shouldShowInstructionsTimeout: NodeJS.Timeout | null = null
+  let hasAddedEventListenersForRestart: boolean = false
 
   useEffect(() => {
     window.addEventListener('resize', setScreen)
@@ -51,13 +51,13 @@ export const HummingbirdGame = () => {
 
   useEffect(() => {
     if (canvas.current) {
-      canvas.current.style.backgroundColor = 'green'
+      canvas.current.style.backgroundColor = 'white'
       ctx.current = canvas.current.getContext('2d')
       setScreen()
       requestAnimationFrame(gameLoop)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [canvas])
+  }, [canvas.current])
 
   const getScaleRatio = () => {
     const screenWidth = Math.min(window.innerWidth, document.documentElement.clientWidth)
@@ -73,14 +73,14 @@ export const HummingbirdGame = () => {
 
   const setScreen = () => {
     if (canvas.current && ctx.current) {
-      scaleRatio.current = getScaleRatio()
+      scaleRatio = getScaleRatio()
 
-      canvas.current.width = GAME_WIDTH * scaleRatio.current
-      canvas.current.height = GAME_HEIGHT * scaleRatio.current
+      canvas.current.width = GAME_WIDTH * scaleRatio
+      canvas.current.height = GAME_HEIGHT * scaleRatio
 
-      hummingbird.current = new Hummingbird(ctx.current, scaleRatio.current)
-      pencilController.current = new PencilController(ctx.current, scaleRatio.current)
-      ground.current = new Ground(ctx.current, scaleRatio.current)
+      hummingbird = new Hummingbird(ctx.current, scaleRatio)
+      pencilController = new PencilController(ctx.current, scaleRatio)
+      ground = new Ground(ctx.current, scaleRatio)
     }
   }
 
@@ -91,15 +91,15 @@ export const HummingbirdGame = () => {
 
   const startGame = (event: KeyboardEvent) => {
     if (event.code === 'Space') {
-      if (!gameStarted.current) {
-        gameStarted.current = true
+      if (!gameStarted) {
+        gameStarted = true
       }
     }
   }
 
   const setupGameReset = () => {
-    if (!hasAddedEventListenersForRestart.current) {
-      hasAddedEventListenersForRestart.current = true
+    if (!hasAddedEventListenersForRestart) {
+      hasAddedEventListenersForRestart = true
 
       setTimeout(() => {
         window.addEventListener('keydown', reset)
@@ -109,86 +109,86 @@ export const HummingbirdGame = () => {
 
   const reset = (event: KeyboardEvent) => {
     if (event.code === 'Space') {
-      gameOver.current = false
-      shouldShowInstructions.current = false
-      shouldShowInstructionsTimeout.current && clearTimeout(shouldShowInstructionsTimeout.current)
-      hummingbird.current && hummingbird.current.reset()
-      pencilController.current && pencilController.current.reset()
-      gameSpeed.current = GAME_SPEED_START
-      gamePoints.current = 0
+      gameOver = false
+      shouldShowInstructions = false
+      shouldShowInstructionsTimeout && clearTimeout(shouldShowInstructionsTimeout)
+      hummingbird && hummingbird.reset()
+      pencilController && pencilController.reset()
+      gameSpeed = GAME_SPEED_START
+      gamePoints = 0
 
       window.removeEventListener('keydown', reset)
-      hasAddedEventListenersForRestart.current = false
+      hasAddedEventListenersForRestart = false
     }
   }
 
   const incrementPoints = () => {
-    pencilController.current &&
-      hummingbird.current &&
-      pencilController.current.hasPassed(hummingbird.current) &&
-      (gamePoints.current += 1)
+    pencilController &&
+      hummingbird &&
+      pencilController.hasPassed(hummingbird) &&
+      (gamePoints += 1)
   }
 
   const gameLoop = (currentTime: number) => {
     clearScreen(canvas.current!, ctx.current!)
 
     // for tracking varying monitor speeds
-    if (previousTime.current === null) {
-      previousTime.current = currentTime
+    if (previousTime === null) {
+      previousTime = currentTime
       requestAnimationFrame(gameLoop)
       return
     }
-    const frameDelta = currentTime - previousTime.current
-    previousTime.current = currentTime
+    const frameDelta = currentTime - previousTime
+    previousTime = currentTime
 
     // update game objects
-    if (gameStarted.current && !gameOver.current) {
-      hummingbird.current && hummingbird.current.update(frameDelta)
-      pencilController.current && pencilController.current.update(frameDelta, gameSpeed.current)
-      ground.current && ground.current.update(frameDelta)
+    if (gameStarted && !gameOver) {
+      hummingbird && hummingbird.update(frameDelta)
+      pencilController && pencilController.update(frameDelta, gameSpeed)
+      ground && ground.update(frameDelta)
     }
 
     if (
-      !gameOver.current &&
-      hummingbird.current &&
-      pencilController.current &&
-      (hummingbird.current.collide() || pencilController.current.collideWith(hummingbird.current))
+      !gameOver &&
+      hummingbird &&
+      pencilController &&
+      (hummingbird.collide() || pencilController.collideWith(hummingbird))
     ) {
-      highScore.current = Math.max(gamePoints.current, highScore.current)
-      gameOver.current = true
-      shouldShowInstructionsTimeout.current = setTimeout(() => {
-        shouldShowInstructions.current = true
+      highScore = Math.max(gamePoints, highScore)
+      gameOver = true
+      shouldShowInstructionsTimeout = setTimeout(() => {
+        shouldShowInstructions = true
       }, 500)
       setupGameReset()
     }
 
     // draw game objects
-    ground.current && ground.current.draw()
-    pencilController.current && pencilController.current.draw()
-    hummingbird.current && hummingbird.current.draw()
+    ground && ground.draw()
+    pencilController && pencilController.draw()
+    hummingbird && hummingbird.draw()
 
     // draw points counter
     incrementPoints()
-    !gameOver.current &&
-      gameStarted.current &&
-      showPointCounter(canvas.current!, ctx.current!, scaleRatio.current, gamePoints.current)
+    !gameOver &&
+      gameStarted &&
+      showPointCounter(canvas.current!, ctx.current!, scaleRatio, gamePoints)
 
-    if (!gameStarted.current || shouldShowInstructions.current) {
-      showInstructions(canvas.current!, ctx.current!, scaleRatio.current)
+    if (!gameStarted || shouldShowInstructions) {
+      showInstructions(canvas.current!, ctx.current!, scaleRatio)
     }
 
-    if (gameOver.current) {
+    if (gameOver) {
       showGameOver(
         canvas.current!,
         ctx.current!,
-        scaleRatio.current,
-        gamePoints.current,
-        highScore.current,
+        scaleRatio,
+        gamePoints,
+        highScore,
       )
     }
 
-    if (!gameOver.current) {
-      gameSpeed.current += GAME_SPEED_INCREMENT
+    if (!gameOver) {
+      gameSpeed += GAME_SPEED_INCREMENT
     }
 
     requestAnimationFrame(gameLoop)

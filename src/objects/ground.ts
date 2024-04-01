@@ -1,3 +1,5 @@
+import GroundImg from '../resources/images/ground.png'
+
 export default class Ground {
   ctx: CanvasRenderingContext2D
   canvas: HTMLCanvasElement
@@ -18,7 +20,7 @@ export default class Ground {
     this.y = this.canvas.height - this.height
 
     this.image = new Image()
-    this.image.src = require('../assets/images/ground.png')
+    this.image.src = GroundImg
   }
 
   draw = () => {

@@ -1,6 +1,10 @@
 import Hummingbird from './hummingbird'
 import { Collideable } from '../types'
 
+import PencilTop from '../resources/images/pencil-top.png'
+import PencilTopReverse from '../resources/images/pencil-top-reverse.png'
+import PencilBody from '../resources/images/pencil-body.png'
+
 export default class Pencil {
   ctx: CanvasRenderingContext2D
   canvas: HTMLCanvasElement
@@ -22,10 +26,10 @@ export default class Pencil {
     this.topImage = new Image()
     this.topImage.src =
       this.y === 0
-        ? require('../assets/images/pencil-top-reverse.png')
-        : require('../assets/images/pencil-top.png')
+        ? PencilTopReverse
+        : PencilTop
     this.bodyImage = new Image()
-    this.bodyImage.src = require('../assets/images/pencil-body.png')
+    this.bodyImage.src = PencilBody
   }
 
   collideWith = (sprite: Collideable) => {

@@ -1,3 +1,5 @@
+import '../fonts.scss'
+
 export const showInstructions = (
   canvas: HTMLCanvasElement,
   ctx: CanvasRenderingContext2D,

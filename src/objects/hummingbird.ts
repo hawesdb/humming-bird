@@ -1,3 +1,7 @@
+import HummingbirdWingsUp from '../resources/images/hummingbird-wings-up.png'
+import HummingbirdWingsNeutral from '../resources/images/hummingbird-wings-neutral.png'
+import HummingbirdWingsDown from '../resources/images/hummingbird-wings-down.png'
+
 export default class Hummingbird {
   ctx: CanvasRenderingContext2D
   canvas: HTMLCanvasElement
@@ -32,9 +36,9 @@ export default class Hummingbird {
     this.x = this.canvas.width / 5
     this.y = this.canvas.height / 2 - this.height / 2
     this.images = [
-      require('../assets/images/hummingbird-wings-up.png'),
-      require('../assets/images/hummingbird-wings-neutral.png'),
-      require('../assets/images/hummingbird-wings-down.png'),
+      HummingbirdWingsUp,
+      HummingbirdWingsNeutral,
+      HummingbirdWingsDown,
     ].map((image) => {
       const img = new Image()
       img.src = image
@@ -54,10 +58,10 @@ export default class Hummingbird {
     }
   }
 
-  jump = () => {
+  jump = (frameDelta: number) => {
     if (this.jumped) {
       this.jumped = false
-      this.velocity -= this.JUMP_SPEED
+      this.velocity -= this.JUMP_SPEED * frameDelta
 
       if (this.velocity < -this.MAX_JUMP_HEIGHT) {
         this.velocity = -this.MAX_JUMP_HEIGHT
@@ -90,7 +94,7 @@ export default class Hummingbird {
 
   update = (frameDelta: number) => {
     this.updateImage()
-    this.jump()
+    this.jump(frameDelta)
     this.fall(frameDelta)
   }
 
