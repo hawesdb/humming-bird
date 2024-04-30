@@ -1,9 +1,10 @@
 import React from 'react'
+import { HummingbirdGame } from './main'
 
-import { HummingbirdGame } from './game'
+import './app.scss'
 
 function App() {
-  return <HummingbirdGame />
+  return <div id='app'><HummingbirdGame /></div>
 }
 
 export default App

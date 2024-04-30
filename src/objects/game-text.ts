@@ -1,10 +1,8 @@
+import { Settings } from '../engine/settings'
 import '../fonts.scss'
 
-export const showInstructions = (
-  canvas: HTMLCanvasElement,
-  ctx: CanvasRenderingContext2D,
-  scaleRatio: number,
-) => {
+export const showInstructions = (canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) => {
+  const scaleRatio = Settings.get('scaleRatio') as number
   const fontSize = 12 * scaleRatio
   ctx.textAlign = 'center'
   ctx.font = `${fontSize}px press_start_2p`
@@ -17,9 +15,9 @@ export const showInstructions = (
 export const showPointCounter = (
   canvas: HTMLCanvasElement,
   ctx: CanvasRenderingContext2D,
-  scaleRatio: number,
   gamePoints: number,
 ) => {
+  const scaleRatio = Settings.get('scaleRatio') as number
   const fontSize = 25 * scaleRatio
   ctx.textAlign = 'center'
   ctx.font = `${fontSize}px press_start_2p`
@@ -36,9 +34,9 @@ export const showPointCounter = (
 export const showHighScore = (
   canvas: HTMLCanvasElement,
   ctx: CanvasRenderingContext2D,
-  scaleRatio: number,
   highScore: number,
 ) => {
+  const scaleRatio = Settings.get('scaleRatio') as number
   const fontSize = 20 * scaleRatio
   ctx.textAlign = 'center'
   ctx.font = `${fontSize}px press_start_2p`
@@ -55,12 +53,12 @@ export const showHighScore = (
 export const showGameOver = (
   canvas: HTMLCanvasElement,
   ctx: CanvasRenderingContext2D,
-  scaleRatio: number,
   points: number,
   highScore: number,
 ) => {
-  showPointCounter(canvas, ctx, scaleRatio, points)
-  showHighScore(canvas, ctx, scaleRatio, highScore)
+  const scaleRatio = Settings.get('scaleRatio') as number
+  showPointCounter(canvas, ctx, scaleRatio)
+  showHighScore(canvas, ctx, scaleRatio)
   const fontSize = 50 * scaleRatio
   ctx.textAlign = 'center'
   ctx.font = `${fontSize}px press_start_2p`

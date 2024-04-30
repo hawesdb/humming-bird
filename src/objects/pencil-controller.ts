@@ -1,6 +1,7 @@
 import Hummingbird from './hummingbird'
 import Pencil from './pencil'
 import { Collideable } from '../types'
+import { Settings } from '../engine/settings'
 
 export default class PencilController {
   ctx: CanvasRenderingContext2D
@@ -11,7 +12,7 @@ export default class PencilController {
   pencilMin: number
 
   PENCIL_WIDTH = 32
-  PENCIL_INTERVAL = 1150
+  PENCIL_INTERVAL = 1.25
   PENCIL_GAP = 32 * 4
   PENCIL_MAX_RATIO = 3 / 4
   PENCIL_MIN_RATIO = 1 / 4
@@ -19,11 +20,11 @@ export default class PencilController {
   pencils: Pencil[] = []
   trackPassedPencils: Pencil[] = []
 
-  constructor(ctx: CanvasRenderingContext2D, scaleRatio: number) {
+  constructor(ctx: CanvasRenderingContext2D) {
     this.ctx = ctx
     this.ctx = ctx
     this.canvas = ctx.canvas
-    this.scaleRatio = scaleRatio
+    this.scaleRatio = Settings.get('scaleRatio') as number
     this.width = this.PENCIL_WIDTH * this.scaleRatio
 
     this.pencilMax = (this.canvas.height * this.PENCIL_MAX_RATIO) / this.scaleRatio
@@ -76,7 +77,6 @@ export default class PencilController {
       this.createPencil()
       this.nextPencilInterval = this.PENCIL_INTERVAL
     }
-
     this.nextPencilInterval -= frameDelta
 
     this.pencils.forEach((pencil) => pencil.update(gameSpeed, frameDelta, this.scaleRatio))

@@ -1,3 +1,4 @@
+import { Settings } from '../engine/settings'
 import GroundImg from '../resources/images/ground.png'
 
 export default class Ground {
@@ -10,10 +11,10 @@ export default class Ground {
   y: number
   image: HTMLImageElement
 
-  constructor(ctx: CanvasRenderingContext2D, scaleRatio: number) {
+  constructor(ctx: CanvasRenderingContext2D) {
     this.ctx = ctx
     this.canvas = ctx.canvas
-    this.scaleRatio = scaleRatio
+    this.scaleRatio = Settings.get('scaleRatio') as number
     this.width = 800 * this.scaleRatio
     this.height = 50 * this.scaleRatio
     this.x = 0
@@ -33,6 +34,6 @@ export default class Ground {
   }
 
   update = (frameDelta: number) => {
-    this.x -= 0.02 * frameDelta
+    this.x -= 20 * frameDelta
   }
 }
