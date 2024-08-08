@@ -24,10 +24,7 @@ export default class Pencil {
     this.y = y
 
     this.topImage = new Image()
-    this.topImage.src =
-      this.y === 0
-        ? PencilTopReverse
-        : PencilTop
+    this.topImage.src = this.y === 0 ? PencilTopReverse : PencilTop
     this.bodyImage = new Image()
     this.bodyImage.src = PencilBody
   }
@@ -52,8 +49,8 @@ export default class Pencil {
     return endOfSprite > endOfPencil
   }
 
-  update = (speed: number, frameDelta: number, scaleRatio: number) => {
-    this.x -= speed * frameDelta * scaleRatio
+  update = (speed: number, scaleRatio: number) => {
+    this.x -= speed * scaleRatio
   }
 
   draw = () => {

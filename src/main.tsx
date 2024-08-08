@@ -18,5 +18,5 @@ export const HummingbirdGame = () => {
     }
   }, [canvas])
 
-  return <canvas id='hummingbird-game' ref={canvas} />
+  return <canvas key='hummingbird-game' id='hummingbird-game' ref={canvas} />
 }

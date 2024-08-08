@@ -1,4 +1,4 @@
-import { Settings } from '../engine/settings'
+import { Settings } from '../engine-old/settings'
 import GroundImg from '../resources/images/ground.png'
 
 export default class Ground {
@@ -33,7 +33,7 @@ export default class Ground {
     }
   }
 
-  update = (frameDelta: number) => {
-    this.x -= 20 * frameDelta
+  update = () => {
+    this.x -= 0.1
   }
 }

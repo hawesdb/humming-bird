@@ -1,7 +1,7 @@
 import HummingbirdWingsUp from '../resources/images/hummingbird-wings-up.png'
 import HummingbirdWingsNeutral from '../resources/images/hummingbird-wings-neutral.png'
 import HummingbirdWingsDown from '../resources/images/hummingbird-wings-down.png'
-import { Settings } from '../engine/settings'
+import { Settings } from '../engine-old/settings'
 
 export default class Hummingbird {
   ctx: CanvasRenderingContext2D
@@ -14,9 +14,9 @@ export default class Hummingbird {
   image: HTMLImageElement
   images: HTMLImageElement[]
 
-  GRAVITY = 20
-  JUMP_SPEED = 600
-  MAX_JUMP_HEIGHT = 500
+  GRAVITY = 0.02
+  JUMP_SPEED = 0.9
+  MAX_JUMP_HEIGHT = 0.7
   jumped = false
   velocity = 0
 
@@ -71,9 +71,9 @@ export default class Hummingbird {
     }
   }
 
-  fall = (frameDelta: number) => {
+  fall = () => {
     this.velocity += this.GRAVITY
-    this.y += this.velocity * frameDelta
+    this.y += this.velocity
   }
 
   collide = () => {
@@ -86,7 +86,7 @@ export default class Hummingbird {
     this.jumped = false
   }
 
-  updateImage = (frameDelta: number) => {
+  updateImage = () => {
     this.imageDelay -= 1
     if (this.imageDelay === 0) {
       this.currentImage = this.currentImage === this.images.length - 1 ? 0 : this.currentImage + 1
@@ -94,10 +94,10 @@ export default class Hummingbird {
     }
   }
 
-  update = (frameDelta: number) => {
-    this.updateImage(frameDelta)
+  update = () => {
+    this.updateImage()
     this.jump()
-    this.fall(frameDelta)
+    this.fall()
   }
 
   draw = () => {

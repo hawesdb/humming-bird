@@ -2,6 +2,7 @@ import {
   Ground,
   Hummingbird,
   PencilController,
+  showGameOver,
   showInstructions,
   showPointCounter,
 } from '../objects'
@@ -17,13 +18,15 @@ export class Level {
 
   GAME_WIDTH = 800
   GAME_HEIGHT = 400
-  GAME_SPEED_START = 150
+  GAME_SPEED_START = 0.2
   RESTART_TIME = 2000
 
   gameStarted = false
   gameOver = false
   startTimer = this.RESTART_TIME
   canStart = true
+  gamePoints = 0
+  highScore = 0
 
   constructor(canvas: React.RefObject<HTMLCanvasElement>) {
     this.canvas = canvas
@@ -77,6 +80,13 @@ export class Level {
     this.ctx.fillRect(0, 0, this.canvas.current!.width, this.canvas.current!.height)
   }
 
+  incrementPoints = () => {
+    this.pencilController &&
+      this.hummingbird &&
+      this.pencilController.hasPassed(this.hummingbird) &&
+      (this.gamePoints += 1)
+  }
+
   run = () => {
     this.clearScreen()
     const frameDelta = Settings.get('dt') as number
@@ -91,24 +101,31 @@ export class Level {
     }
 
     if (this.gameStarted && !this.gameOver) {
-      this.ground?.update(frameDelta)
-      this.hummingbird?.update(frameDelta)
-      this.pencilController?.update(frameDelta, this.GAME_SPEED_START)
+      this.ground?.update()
+      this.hummingbird?.update()
+      this.pencilController?.update(this.GAME_SPEED_START)
+
+      this.incrementPoints()
 
       if (
         this.hummingbird?.collide() ||
         (this.hummingbird && this.pencilController?.collideWith(this.hummingbird))
       ) {
+        this.highScore = Math.max(this.gamePoints, this.highScore)
         this.gameStarted = false
         this.gameOver = true
         this.canStart = false
       }
     }
 
-    // showPointCounter()
     this.ground?.draw()
     this.hummingbird?.draw()
     this.pencilController?.draw()
+    showPointCounter(this.canvas.current!, this.ctx, this.gamePoints)
+
+    if (this.gameOver) {
+      showGameOver(this.canvas.current!, this.ctx, this.gamePoints, this.highScore)
+    }
   }
 
   deregister = () => {

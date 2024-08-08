@@ -1,4 +1,4 @@
-import { Settings } from '../engine/settings'
+import { Settings } from '../engine-old/settings'
 import '../fonts.scss'
 
 export const showInstructions = (canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) => {
@@ -57,8 +57,8 @@ export const showGameOver = (
   highScore: number,
 ) => {
   const scaleRatio = Settings.get('scaleRatio') as number
-  showPointCounter(canvas, ctx, scaleRatio)
-  showHighScore(canvas, ctx, scaleRatio)
+  showPointCounter(canvas, ctx, points)
+  showHighScore(canvas, ctx, highScore)
   const fontSize = 50 * scaleRatio
   ctx.textAlign = 'center'
   ctx.font = `${fontSize}px press_start_2p`
